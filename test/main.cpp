@@ -1,18 +1,19 @@
-import geometry;
-import transform;
+#include "view.h"
+#include "image.h"
 
-import <iostream>;
+#include <iostream>
 
-using namespace std;
 int main() {
 	
-  Mat m({
-      {{1.0, 0.0, 0.0, 1.0},
-       {0.0, 1.0, 0.0, 1.0},
-       {0.0, 0.0, 1.0, 1.0},
-       {0.0, 0.0, 0.0, 1.0}}
-    });
+	// Camera + Viewport setup
+	const double ASPECT_RATIO = 16.0 / 9.0;
+	const size_t IMG_WIDTH = 800;
+	const size_t IMG_HEIGHT = static_cast<size_t>(static_cast<double>(IMG_WIDTH) / static_cast<double>(ASPECT_RATIO));
+	const double VP_WIDTH = 1.0;
+	const double VP_HEIGHT = 1.0 / ASPECT_RATIO;
 
-  Pnt3 p(1, 1, 1);
-  Pnt3 res = m * p;
+	Viewport vp{1.0, 1.0 / ASPECT_RATIO};
+	Camera camera{ IMG_WIDTH, IMG_HEIGHT, vp };
+	Image img = camera.render();
+	img.save("img.png");
 }

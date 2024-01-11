@@ -18,6 +18,22 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="geometry.cpp" />
+    <ClCompile Include="image.cpp" />
+    <ClCompile Include="lodepng.cpp" />
+    <ClCompile Include="shape.cpp" />
+    <ClCompile Include="transform.cpp" />
+    <ClCompile Include="view.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="geometry.h" />
+    <ClInclude Include="image.h" />
+    <ClInclude Include="lodepng.h" />
+    <ClInclude Include="shape.h" />
+    <ClInclude Include="transform.h" />
+    <ClInclude Include="view.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -77,8 +93,10 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <EnableModules>true</EnableModules>
-      <CompileAs>CompileAsCppModule</CompileAs>
+      <EnableModules>false</EnableModules>
+      <CompileAs>Default</CompileAs>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -94,8 +112,10 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <EnableModules>true</EnableModules>
-      <CompileAs>CompileAsCppModule</CompileAs>
+      <EnableModules>false</EnableModules>
+      <CompileAs>Default</CompileAs>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -111,8 +131,10 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <EnableModules>true</EnableModules>
-      <CompileAs>CompileAsCppModule</CompileAs>
+      <EnableModules>false</EnableModules>
+      <CompileAs>Default</CompileAs>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,8 +150,10 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <EnableModules>true</EnableModules>
-      <CompileAs>CompileAsCppModule</CompileAs>
+      <EnableModules>false</EnableModules>
+      <CompileAs>Default</CompileAs>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <BuildStlModules>false</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -138,12 +162,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="geometry.ixx" />
-    <ClCompile Include="Pnt3.cpp" />
-    <ClCompile Include="transform.ixx" />
-    <ClCompile Include="Vec3.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -76,9 +76,11 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableModules>true</EnableModules>
-      <CompileAs>CompileAsCppModuleInternalPartition</CompileAs>
+      <CompileAs>Default</CompileAs>
+      <AdditionalIncludeDirectories>C:\Users\jeetb\projects\c++ projects\raytracer\test\x64\Debug;C:\Users\jeetb\projects\c++ projects\raytracer\graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BuildStlModules>true</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -93,9 +95,11 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableModules>true</EnableModules>
-      <CompileAs>CompileAsCppModuleInternalPartition</CompileAs>
+      <CompileAs>Default</CompileAs>
+      <AdditionalIncludeDirectories>C:\Users\jeetb\projects\c++ projects\raytracer\test\x64\Debug;C:\Users\jeetb\projects\c++ projects\raytracer\graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BuildStlModules>true</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -110,9 +114,11 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableModules>true</EnableModules>
-      <CompileAs>CompileAsCppModuleInternalPartition</CompileAs>
+      <CompileAs>Default</CompileAs>
+      <AdditionalIncludeDirectories>C:\Users\jeetb\projects\c++ projects\raytracer\test\x64\Debug;C:\Users\jeetb\projects\c++ projects\raytracer\graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BuildStlModules>true</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,9 +133,11 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableModules>true</EnableModules>
-      <CompileAs>CompileAsCppModuleInternalPartition</CompileAs>
+      <CompileAs>Default</CompileAs>
+      <AdditionalIncludeDirectories>C:\Users\jeetb\projects\c++ projects\raytracer\test\x64\Debug;C:\Users\jeetb\projects\c++ projects\raytracer\graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BuildStlModules>true</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,12 +147,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\graphics\graphics.vcxproj">
       <Project>{ca0e4560-6898-4ab8-87ec-d8431e1d71bb}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
