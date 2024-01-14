@@ -29,6 +29,7 @@
   <ItemGroup>
     <ClInclude Include="geometry.h" />
     <ClInclude Include="image.h" />
+    <ClInclude Include="light.h" />
     <ClInclude Include="lodepng.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="transform.h" />

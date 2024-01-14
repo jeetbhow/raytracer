@@ -27,9 +27,6 @@ struct Vec3 {
 	// Return the dot product of this vector and another one. 
 	double dot(const Vec3& other) const;
 
-	// Return the cross product of this vector and another one. 
-	double cross(const Vec3& other) const;
-
 	// Return the length of the vector.
 	double length() const;
 

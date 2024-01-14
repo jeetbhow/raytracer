@@ -18,14 +18,14 @@ const double* Mat3::operator[](size_t row) const {
 	return data[row];
 }
 
-Vec3 Mat3::operator *(const Vec3& v) const {
+Vec3 Mat3::operator*(const Vec3& v) const {
 	double x = data[0][0] * v.x + data[0][1] * v.y + data[0][2] * v.z;
 	double y = data[1][0] * v.x + data[1][1] * v.y + data[1][2] * v.z;
 	double z = data[2][0] * v.x + data[2][1] * v.y + data[2][2] * v.z;
 	return Vec3{ x, y, z };
 }
 
-Mat3 Mat3::operator *(const Mat3& m) const {
+Mat3 Mat3::operator*(const Mat3& m) const {
 	Mat3 res{};
 
 	for (size_t i = 0; i < SIZE; ++i) {
@@ -39,7 +39,7 @@ Mat3 Mat3::operator *(const Mat3& m) const {
 	return res;
 }
 
-void Mat3::setReciprocalDiag(){
+void Mat3::setReciprocalDiag() {
 	data[0][0] = 1 / data[0][0];
 	data[1][1] = 1 / data[1][1];
 	data[2][2] = 1 / data[2][2];
@@ -74,7 +74,8 @@ std::ostream& operator<<(std::ostream& os, const Mat3& m) {
 				os << ", ";
 			}
 		}
-		os << " ]" << std::endl; // Close the square brackets and start a new line for the next row
+		os << " ]" << std::endl;  // Close the square brackets and start a new line
+		// for the next row
 	}
 	return os;
 }
@@ -143,21 +144,24 @@ Mat4 Mat4::identity() {
 	return result;
 }
 
-Pnt3 Mat4::operator *(const Pnt3& other) const {
-	double x = data[0][0] * other.x + data[0][1] * other.y + data[0][2] * other.z + data[0][3];
-	double y = data[1][0] * other.x + data[1][1] * other.y + data[1][2] * other.z + data[1][3];
-	double z = data[2][0] * other.x + data[2][1] * other.y + data[2][2] * other.z + data[2][3];
+Pnt3 Mat4::operator*(const Pnt3& other) const {
+	double x = data[0][0] * other.x + data[0][1] * other.y +
+		data[0][2] * other.z + data[0][3];
+	double y = data[1][0] * other.x + data[1][1] * other.y +
+		data[1][2] * other.z + data[1][3];
+	double z = data[2][0] * other.x + data[2][1] * other.y +
+		data[2][2] * other.z + data[2][3];
 	return Pnt3{ x, y, z };
 }
 
-Vec3 Mat4::operator *(const Vec3& other) const {
+Vec3 Mat4::operator*(const Vec3& other) const {
 	double x = data[0][0] * other.x + data[0][1] * other.y + data[0][2] * other.z;
 	double y = data[1][0] * other.x + data[1][1] * other.y + data[1][2] * other.z;
 	double z = data[2][0] * other.x + data[2][1] * other.y + data[2][2] * other.z;
 	return Vec3{ x, y, z };
 }
 
-Mat4 Mat4::operator *(const Mat4& other) const {
+Mat4 Mat4::operator*(const Mat4& other) const {
 	Mat4 result{};
 
 	for (size_t i = 0; i < 4; ++i) {
@@ -187,6 +191,12 @@ void Mat4::fill(Mat3 m) {
 	}
 }
 
+void Mat4::translate(Pnt3 p) {
+	data[0][3] = p.x;
+	data[1][3] = p.y;
+	data[2][3] = p.z;
+}
+
 void Mat4::translate(double dx, double dy, double dz) {
 	data[0][3] += dx;
 	data[1][3] += dy;
@@ -194,8 +204,8 @@ void Mat4::translate(double dx, double dy, double dz) {
 }
 
 void Mat4::scale(double scalar) {
-	data[0][0] *= scalar; 
-	data[1][1] *= scalar; 
+	data[0][0] *= scalar;
+	data[1][1] *= scalar;
 	data[2][2] *= scalar;
 }
 
@@ -206,11 +216,9 @@ void Mat4::scale(double kx, double ky, double kz) {
 }
 
 double Mat4::getLength(size_t col) const {
-	return std::sqrt(
-		(data[0][col] * data[0][col]) 
-		+ (data[1][col] * data[1][col]) 
-		+ (data[2][col] * data[2][col])
-	);
+	return std::sqrt((data[0][col] * data[0][col]) +
+		(data[1][col] * data[1][col]) +
+		(data[2][col] * data[2][col]));
 }
 
 Mat4 Mat4::inverse() const {
@@ -220,13 +228,16 @@ Mat4 Mat4::inverse() const {
 	Mat3 inverseScale = linear.extractScaling();
 	inverseScale.setReciprocalDiag();
 
-	// Multiplying by the inverse of the scaling matrix removes it from the original linear transformation.
-	// This leaves us with just rotation. We then invert the rotation to get the entire inverse. 
+	// Multiplying by the inverse of the scaling matrix removes it from the
+	// original linear transformation. This leaves us with just rotation. We then
+	// invert the rotation to get the entire inverse.
 	Mat3 inverseRot = inverseScale * linear;
 	inverseRot.transpose();
 
-	Vec3 inverseTrans{ -data[0][3], -data[1][3], -data[2][3] };
-	return Mat4{ inverseRot * inverseScale, inverseTrans };
+	Mat3 inverseRotScale = inverseRot * inverseScale;
+	Vec3 inverseTrans =
+		inverseRotScale * Vec3{ -data[0][3], -data[1][3], -data[2][3] };
+	return Mat4{ inverseRotScale, inverseTrans };
 }
 
 std::ostream& operator<<(std::ostream& os, const Mat4& m) {
@@ -238,7 +249,8 @@ std::ostream& operator<<(std::ostream& os, const Mat4& m) {
 				os << ", ";
 			}
 		}
-		os << " ]" << std::endl; // Close the square brackets and start a new line for the next row
+		os << " ]" << std::endl;  // Close the square brackets and start a new line
+		// for the next row
 	}
 	return os;
 }

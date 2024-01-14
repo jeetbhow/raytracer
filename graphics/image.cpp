@@ -8,21 +8,21 @@ Image::Image(size_t width, size_t height) {
 	imgbuf = std::vector<unsigned char>(4 * width * height);
 }
 
-Pixel Image::getPixel(size_t row, size_t col) const {
+Color Image::getPixel(size_t row, size_t col) const {
 	const size_t baseIndex = row * width + col;
-	float r = imgbuf[baseIndex] / 255.0f;
-	float g = imgbuf[baseIndex + 1] / 255.0f;
-	float b = imgbuf[baseIndex + 2] / 255.0f;
-	float a = imgbuf[baseIndex + 3] / 255.0f;
-	return Pixel{ r, g, b, a };
+	double r = imgbuf[baseIndex] / 255.0;
+	double g = imgbuf[baseIndex + 1] / 255.0;
+	double b = imgbuf[baseIndex + 2] / 255.0;
+	double a = imgbuf[baseIndex + 3] / 255.0;
+	return Color{ r, g, b, a };
 }
 
-void Image::setPixel(size_t row, size_t col, const Pixel& color) {
+void Image::setPixel(size_t row, size_t col, const Color& color) {
 	const size_t baseIndex = 4 * (row * width + col);
-	imgbuf[baseIndex] = static_cast<unsigned char>(255.0f * color.r);
-	imgbuf[baseIndex + 1] = static_cast<unsigned char>(255.0f * color.g);
-	imgbuf[baseIndex + 2] = static_cast<unsigned char>(255.0f * color.b);
-	imgbuf[baseIndex + 3] = static_cast<unsigned char>(255.0f * color.a);
+	imgbuf[baseIndex] = static_cast<unsigned char>(255.999 * color.r);
+	imgbuf[baseIndex + 1] = static_cast<unsigned char>(255.999 * color.g);
+	imgbuf[baseIndex + 2] = static_cast<unsigned char>(255.999 * color.b);
+	imgbuf[baseIndex + 3] = static_cast<unsigned char>(255.999 * color.a);
 }
 
 size_t Image::getWidth() const {
@@ -47,7 +47,7 @@ bool Image::save(std::string path) {
 }
 
 
-std::ostream& operator<<(std::ostream& os, const Pixel& p) {
+std::ostream& operator<<(std::ostream& os, const Color& p) {
 	os << std::format("<{}, {}, {}>", p.r, p.g, p.b);
 	return os;
 }

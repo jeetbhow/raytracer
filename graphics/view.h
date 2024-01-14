@@ -1,28 +1,67 @@
 #pragma once
 #include "image.h"
+#include "transform.h"
+#include "shape.h"
 
-struct Viewport {
+/*
+	Represents a virtual image of the scene formed by a camera.
+*/
+class Viewport {
+private:
 	double width; 
 	double height;
+	std::shared_ptr<Image> img;
 
-	Viewport() : width(0.0), height(0.0) {};
-	// Create a viewport with the specified dimensions.
-	Viewport(double width, double height) : width(width), height(height) {
+public:
+	static const Color BACKGROUND_COLOR;
+	static const Color OBJ_COLOR;
+
+	// Create a viewport with the given width and image width and synchronize their aspect ratios.
+	Viewport(double width, size_t imgWidth, double aspectRatio): width(width) {
 		this->width = width;
-		this->height = height;
+		this->height = width / aspectRatio;
+
+		img = std::make_unique<Image>(
+			imgWidth,
+			static_cast<size_t>(std::round(imgWidth / aspectRatio))
+		);
 	}
+	// Create a viewport by giving the dimensions of the viewport and image. 
+	Viewport(double vpWidth, double vpHeight, size_t imgWidth, size_t imgHeight): width(vpWidth), height(vpHeight) {
+		img = std::make_unique<Image>(imgWidth, imgHeight);
+	}
+
+	// Get the location of the bottom left pixel of the viewport.
+	Pnt3 bottomLeft(Pnt3 camCenter, double focalLength) const;
+
+	// Return a vector that represents the motion required to move across 
+	// pixel in the horizontal direction.
+	Vec3 dx() const;
+
+	// Return a vector that represents the motion required to move across one 
+	// viewport pixel in the vertical direction. 
+	Vec3 dy() const;
+
+	// Return a pointer to the image.
+	std::shared_ptr<Image> getImg() { return img; }
 };
 
 class Camera {
 private: 
-	Image* image;
 	Viewport viewport;
+	Mat4 transform;
 	double focalLength;
 
 public: 
-	// Create a camera that produces an image with the given dimensions. 
-	Camera(size_t imageWidth, size_t imageHeight, const Viewport& viewport);
+	// Create a camera. 
+	Camera(const Viewport& viewport, Pnt3 position, double focalLength) : viewport(viewport), focalLength(focalLength) {
+		transform = Mat4::identity();
+		transform.translate(position);
+	}
+
+	// Get the position of the camera in world-space.
+	Pnt3 getPosition() const;
 
 	// Create an image of the scene and return it. 
-	Image& render();
+	Image& render(std::vector<Sphere> objs, std::vector<Light> lights);
 };

@@ -1,17 +1,7 @@
 #include "shape.h"
 
-Mat4 Sphere::invert() const {
+Mat4 Sphere::inverse() const {
 	return transform.inverse();
-}
-
-Sphere::Sphere() {
-	transform = Mat4::identity();
-}
-
-Sphere::Sphere(Pnt3 center, double radius) {
-	transform = Mat4::identity();
-	transform.scale(radius, radius, radius);
-	transform.translate(center.x, center.y, center.z);
 }
 
 double Sphere::radius() const {
@@ -22,14 +12,25 @@ Pnt3 Sphere::center() const {
 	return Pnt3(transform[0][3], transform[1][3], transform[2][3]);
 }
 
+
+
 Sphere& Sphere::translate(double dx, double dy, double dz) {
 	transform.translate(dx, dy, dz);
+	return *this;
+}
+
+Sphere& Sphere::scale(double scalar) {
+	transform.scale(scalar);
 	return *this;
 }
 
 Sphere& Sphere::scale(double kx, double ky, double kz) {
 	transform.scale(kx, ky, kz);
 	return *this;
+}
+
+void Sphere::setCoordSys(Mat4 m) {
+	transform = m * transform;
 }
 
 std::vector<double> Sphere::hit(Ray& r) const {

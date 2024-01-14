@@ -80,6 +80,9 @@ public:
 	// Return true if scaling was applied to the matrix and false otherwise. 
 	bool isScaled() const;
 	
+	// Set the translational component of the matrix to the location given by a point. 
+	void translate(Pnt3 p);
+
 	// Increment the translational component of the matrix along each axis. 
 	void translate(double dx, double dy, double dz);
 

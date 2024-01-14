@@ -10,7 +10,7 @@ Pnt3 Pnt3::operator +(const Vec3& other) const {
 }
 
 Vec3 Pnt3::operator -(const Pnt3& other) const {
-	return Vec3(x + other.x, y + other.y, z + other.z);
+	return Vec3(x - other.x, y - other.y, z - other.z);
 }
 
 std::ostream& operator<<(std::ostream& os, const Pnt3& p) {
@@ -22,7 +22,7 @@ Vec3 Vec3::operator +(const Vec3& other) const {
 	return Vec3(x + other.x, y + other.y, z + other.z);
 }
 
-Vec3 Vec3::operator -(const Vec3& other) const {
+Vec3 Vec3::operator-(const Vec3& other) const {
 	return Vec3(x - other.x, y - other.y, z - other.z);
 }
 
