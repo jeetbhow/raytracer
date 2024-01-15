@@ -1,5 +1,7 @@
 #pragma once
 #include <iostream>
+#include <format>
+#include <string>
 
 // Represents a motion or displacement in 3D space. 
 struct Vec3 {
@@ -16,7 +18,14 @@ struct Vec3 {
 	Vec3 operator -() const;
 
 	// Send a formatted string version of the vector to an ostream. Vectors are denoted by square brackets []. 
-	friend std::ostream& operator <<(std::ostream& os, const Vec3& v);
+	friend std::ostream& operator<<(std::ostream& os, const Vec3& v) {
+		os << '[' << v.x << ", " << v.y << ", " << v.z << ']';
+		return os;
+	}
+
+	std::string toString() const {
+		return std::format("[{}, {}, {}]", x, y, z);
+	}
 
 	// Take the reciprocal of all of the elements in the vector. 
 	void reciprocal();
@@ -48,6 +57,10 @@ struct Pnt3 {
 
 	// Send a formatted string version of the point to an output stream. Points are formatted with parentheses (). 
 	friend std::ostream& operator <<(std::ostream& os, const Pnt3& p);
+
+	std::string toString() const {
+		return std::format("({}, {}, {})", x, y, z);
+	}
 };
 
 

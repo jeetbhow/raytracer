@@ -1,6 +1,5 @@
 #pragma once
 #include "image.h"
-#include "transform.h"
 #include "shape.h"
 
 /*
@@ -63,5 +62,5 @@ public:
 	Pnt3 getPosition() const;
 
 	// Create an image of the scene and return it. 
-	Image& render(std::vector<Sphere> objs, std::vector<Light> lights);
+	Image& render(std::vector<Sphere> objs, std::vector<Light> lights, int frame);
 };

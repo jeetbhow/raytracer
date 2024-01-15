@@ -1,6 +1,5 @@
 #pragma once
 #include "geometry.h"
-#include <ostream>
 #include <algorithm>
 
 struct Color {
@@ -16,6 +15,7 @@ struct Color {
 	Color(double r, double g, double b, double a) : r(r), g(g), b(b), a(a) {};
 
 	Color operator *(double scalar) const { return Color(r * scalar, g * scalar, b * scalar); }
+	void operator +=(const Color& other) { r += other.r;  g += other.g; b += other.b; }
 	Color operator *(const Color& other) const { return Color{ r * other.r, g * other.g, b * other.b }; }
 	Color operator +(const Color& other) const { return Color{ std::min(1.0, r + other.r), std::min(1.0, g + other.g), std::min(1.0, b + other.b) }; }
 		 

@@ -1,11 +1,10 @@
 #include "view.h"
 #include "light.h"
-#include "shape.h"
 #include <algorithm>
 #include <format>
 
-const Color Viewport::BACKGROUND_COLOR = Color{ 0.0f, 0.0f, 0.0f };
-const Color Viewport::OBJ_COLOR = Color{ 1.0f, 0.0f, 0.0f };
+const Color Viewport::BACKGROUND_COLOR = Color{ 0.0, 0.0, 0.0 };
+const Color Viewport::OBJ_COLOR = Color{ 1.0, 0.0, 0.0 };
 
 Vec3 Viewport::dx() const {
 	return Vec3{ width / img->getWidth(), 0, 0 };
@@ -19,7 +18,7 @@ Pnt3 Viewport::bottomLeft(Pnt3 camPosition, double focalLength) const {
 	return Pnt3(camPosition + Vec3{ -width / 2, -height / 2, -focalLength } + dx() / 2 + dy() / 2);
 }
 
-Image& Camera::render(std::vector<Sphere> objs, std::vector<Light> lights) {
+Image& Camera::render(std::vector<Sphere> objs, std::vector<Light> lights, int frame) {
 	Pnt3 bottomLeft = viewport.bottomLeft(getPosition(), focalLength);
 
 	// We want to compute the inverse matrix for each obj in the scene.
@@ -35,15 +34,15 @@ Image& Camera::render(std::vector<Sphere> objs, std::vector<Light> lights) {
 		for (size_t j = 0; j < img->getWidth(); ++j) {
 			Pnt3 targetPixel = bottomLeft + viewport.dx() * (double)j + viewport.dy() * (double)i;
 			Vec3 direction = (targetPixel - getPosition()).normalize();
-			for (size_t k = 0; k < objs.size(); ++k) {
-				Mat4 inverse = objs[k].inverse();
+			for (auto& obj : objs) {
+				Mat4 inverse = obj.inverse();
 
 				// Transform the ray into the sphere's coordinate frame.
 				Pnt3 originObjSpace = inverse * getPosition();
 				Vec3 dirObjSpace = (inverse * direction).normalize();
 				Ray ray{ originObjSpace, dirObjSpace };
 
-				std::vector<double> hits = objs[k].hit(ray);
+				std::vector<double> hits = obj.hit(ray);
 
 				// No hit. Set pixel to background color and continue. 
 				if (hits.size() == 0) {
@@ -61,11 +60,18 @@ Image& Camera::render(std::vector<Sphere> objs, std::vector<Light> lights) {
 				inverseTranspose.transpose();
 				normal = (inverseTranspose * normal).normalize();
 
-				double diffuse = std::max(0.0, -dirObjSpace.dot(normal));
-				std::cout << std::format("i: {} j: {} diffuse: {}\n", i, j, diffuse);
+				// We calculate the final value of the pixel by summing the shading calculations on every light source. 
+				Color finalColor = Color(0.00, 0.00, 0.00);
+				for (auto& light : lights) {
+					Vec3 lightDirection = (inverse * light.getLocation() - surfacePnt);
+					double lightDistance = lightDirection.length();
+					lightDirection = lightDirection / lightDistance;
 
-				Color color = Viewport::OBJ_COLOR * diffuse;
-				img->setPixel(img->getHeight() - 1 - i, j, color);
+					double diffuse = std::max(lightDirection.dot(normal), 0.0);
+					double attentuation = 1.0 / (1.0 + 0.1 * lightDistance + 0.01 * lightDistance * lightDistance);
+					finalColor += (light.getColor() * diffuse * attentuation);
+				}
+				img->setPixel(img->getHeight() - 1 - i, j, finalColor);
 			}
 		}
 	}

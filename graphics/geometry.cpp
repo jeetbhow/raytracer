@@ -1,5 +1,4 @@
 #include "geometry.h"
-#include <format>
 
 Pnt3 Ray::at(double t) const {
 	return origin + direction * t;
@@ -14,7 +13,7 @@ Vec3 Pnt3::operator -(const Pnt3& other) const {
 }
 
 std::ostream& operator<<(std::ostream& os, const Pnt3& p) {
-	os << std::format("({}, {}, {})", p.x, p.y, p.z);
+	os << "(" << p.x << ", " << p.y << ", " << p.z << ")";
 	return os;
 }
 
@@ -62,8 +61,5 @@ Vec3 Vec3::normalize() const {
 	return *this / length();
 }
 
-std::ostream& operator<<(std::ostream& os, const Vec3& v) {
-	os << std::format("[{}, {}, {}]", v.x, v.y, v.z);
-	return os;
-}
+
 
