@@ -1,6 +1,6 @@
 #pragma once
 #include "image.h"
-#include "shape.h"
+#include "object.h"
 
 /*
 	Represents a virtual image of the scene formed by a camera.
@@ -62,5 +62,5 @@ public:
 	Pnt3 getPosition() const;
 
 	// Create an image of the scene and return it. 
-	Image& render(std::vector<Sphere> objs, std::vector<Light> lights, int frame);
+	Image& render(const std::vector<Object>& objs, const std::vector<Light>& lights);
 };

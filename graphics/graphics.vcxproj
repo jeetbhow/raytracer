@@ -21,8 +21,9 @@
   <ItemGroup>
     <ClCompile Include="geometry.cpp" />
     <ClCompile Include="image.cpp" />
+    <ClCompile Include="light.cpp" />
     <ClCompile Include="lodepng.cpp" />
-    <ClCompile Include="shape.cpp" />
+    <ClCompile Include="object.cpp" />
     <ClCompile Include="transform.cpp" />
     <ClCompile Include="view.cpp" />
   </ItemGroup>
@@ -31,7 +32,7 @@
     <ClInclude Include="image.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="lodepng.h" />
-    <ClInclude Include="shape.h" />
+    <ClInclude Include="object.h" />
     <ClInclude Include="transform.h" />
     <ClInclude Include="view.h" />
   </ItemGroup>
