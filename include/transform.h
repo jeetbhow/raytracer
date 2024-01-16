@@ -115,4 +115,3 @@ public:
 	// Send a formatted string representation of the matrix to an output stream.
 	friend std::ostream& operator <<(std::ostream& os, const Mat4& m);
 };
-

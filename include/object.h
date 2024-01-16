@@ -88,7 +88,3 @@ struct Object {
 	// Compute the color produced by the Blinn-Phong illumination model for this object.
 	Color phong(const Light& light, const Vec3& L, const Vec3& V, const Vec3& N) const;
 };
-
-
-
-

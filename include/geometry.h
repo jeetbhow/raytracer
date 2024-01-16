@@ -71,5 +71,3 @@ struct Ray {
 	// Return the point at t.  
 	Pnt3 at(double t) const;
 };
-
-

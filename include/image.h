@@ -30,6 +30,3 @@ public:
 	// Save the image at a desired path
 	bool save(std::string path);
 };
-
-
-

@@ -52,4 +52,3 @@ public:
 	Pnt3 getLocation() const { return location; }
 	Color getColor() const { return color; }
 };
-
