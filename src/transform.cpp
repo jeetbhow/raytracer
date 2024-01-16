@@ -235,8 +235,7 @@ Mat4 Mat4::inverse() const {
 	inverseRot.transpose();
 
 	Mat3 inverseRotScale = inverseRot * inverseScale;
-	Vec3 inverseTrans =
-		inverseRotScale * Vec3{ -data[0][3], -data[1][3], -data[2][3] };
+	Vec3 inverseTrans = inverseRotScale * Vec3{ -data[0][3], -data[1][3], -data[2][3] };
 	return Mat4{ inverseRotScale, inverseTrans };
 }
 
