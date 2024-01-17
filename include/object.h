@@ -12,6 +12,9 @@ public:
 	// Return the inverse of the transform matrix of this object.
 	Mat4 inverse() const;
 
+	// Move this object to the given location. 
+	Geometry& move(double x, double y, double z);
+
 	// Translate this object.
 	Geometry& translate(double dx, double dy, double dz);
 

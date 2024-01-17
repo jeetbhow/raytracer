@@ -62,5 +62,5 @@ public:
 	Pnt3 getPosition() const;
 
 	// Create an image of the scene and return it. 
-	Image& render(const std::vector<Object>& objs, const std::vector<Light>& lights);
+	Image& render(std::vector<Object>& objs, std::vector<Light>& lights);
 };

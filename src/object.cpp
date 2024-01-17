@@ -4,6 +4,11 @@ Mat4 Geometry::inverse() const {
 	return transform.inverse();
 }
 
+Geometry& Geometry::move(double x, double y, double z) {
+	transform.setTranslate(x, y, z);
+	return *this;
+}
+
 Geometry& Geometry::translate(double dx, double dy, double dz) {
 	transform.translate(dx, dy, dz);
 	return *this;
@@ -41,9 +46,12 @@ std::vector<double> Sphere::hit(const Ray& r) const {
 	if (discriminant < 0) {
 		return {};
 	} else {
+		std::vector<double> hits;
 		double minusT = (-b - std::sqrt(discriminant)) / a;
 		double plusT = (-b + std::sqrt(discriminant)) / a;
-		return { minusT, plusT };
+		if (minusT > 0) hits.push_back(minusT);
+		if (plusT > 0) hits.push_back(plusT);
+		return hits;
 	}
 }
 
@@ -53,11 +61,11 @@ Vec3 Sphere::normal(const Pnt3& p) const {
 
 Color Object::phong(const Light& light, const Vec3& L, const Vec3& V, const Vec3& N) const {
 	Color ambient = Color(1, 1, 1) * material.ambient;
-	Color diffuse = light.getColor() * material.color * material.diffuse * std::max(0.0, L.dot(N));
+	Color diffuse = light.color * material.color * material.diffuse * std::max(0.0, L.dot(N));
 
 	Vec3 halfway = (V + L).normalize();
 	double specularI = std::pow(std::max(0.0, halfway.dot(N)), material.shininess);
-	Color specular = light.getColor() * material.specular * specularI;
+	Color specular = light.color * material.specular * specularI;
 
 	return (ambient + diffuse + specular);
 }

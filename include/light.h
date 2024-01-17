@@ -39,16 +39,13 @@ struct Color {
 
 	// Send a string representation of the pixel to an output stream. 
 	friend std::ostream& operator <<(std::ostream& os, const Color& p);
+
+	// Return a string version of the Color. 
+	std::string toString() const;
 };
 
 // A point light.
-class Light {
-private:
+struct Light {
 	Pnt3 location;
 	Color color;
-
-public:
-	Light(const Color& color, Pnt3 location) : color(color), location(location) {}
-	Pnt3 getLocation() const { return location; }
-	Color getColor() const { return color; }
 };

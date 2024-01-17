@@ -8,6 +8,8 @@ struct Vec3 {
 	// The components of the vector. 
 	double x, y, z;
 
+	Vec3(double x, double y, double z) : x(x), y(y), z(z) {}
+
 	// Vector addition and substraction. 
 	Vec3 operator +(const Vec3& other) const;
 	Vec3 operator -(const Vec3& other) const;
@@ -51,6 +53,8 @@ struct Pnt3 {
 
 	// (+ operator overload) Add a vector to a point to translate it. 
 	Pnt3 operator +(const Vec3& other) const;
+
+	void operator +=(const Vec3& other);
 
 	// (- operator overload) Subtract two points to get a vector that represents the displacement between them. 
 	Vec3 operator -(const Pnt3& other) const;

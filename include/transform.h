@@ -76,15 +76,15 @@ public:
 
 	// Matrix-vector multiplcation.
 	Vec3 operator *(const Vec3& other) const;
-
-	// Return true if scaling was applied to the matrix and false otherwise. 
-	bool isScaled() const;
 	
-	// Set the translational component of the matrix to the location given by a point. 
+	// Increment the translational component of the matrix to the location given by a point. 
 	void translate(Pnt3 p);
 
 	// Increment the translational component of the matrix along each axis. 
 	void translate(double dx, double dy, double dz);
+
+	// Set the translational component of this matrix to the given configuration.
+	void setTranslate(double x, double y, double z);
 
 	// Increase the scaling component of this matrix by a constant factor along each axis. If you want
 	// to scale unevenly, then use the version of this method that passes 3 arguments. 

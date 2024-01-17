@@ -80,14 +80,6 @@ std::ostream& operator<<(std::ostream& os, const Mat3& m) {
 	return os;
 }
 
-bool Mat4::isScaled() const {
-	if (data[0][0] == 1 && data[1][1] == 1 && data[2][2] == 2) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
 Mat4::Mat4() {
 	for (size_t i = 0; i < SIZE; ++i) {
 		for (size_t j = 0; j < SIZE; ++j) {
@@ -201,6 +193,12 @@ void Mat4::translate(double dx, double dy, double dz) {
 	data[0][3] += dx;
 	data[1][3] += dy;
 	data[2][3] += dz;
+}
+
+void Mat4::setTranslate(double x, double y, double z) {
+	data[0][3] = x;
+	data[1][3] = y;
+	data[2][3] = z;
 }
 
 void Mat4::scale(double scalar) {
