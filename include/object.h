@@ -1,5 +1,4 @@
 #pragma once
-#include "transform.h"
 #include "light.h"
 
 // Determines the shape of an object.
@@ -80,6 +79,7 @@ struct Material {
 
 // A renderable object. An object has a geometry which determines its shape, and a material which determines
 // how it interacts with light. 
+
 struct Object {
 	std::unique_ptr<Geometry> geometry;
 	Material material;
@@ -87,6 +87,10 @@ struct Object {
 	// Create an object. 
 	Object(std::unique_ptr<Geometry> geometry, const Material& material): 
 		geometry(std::move(geometry)), material(material) {}
+
+	// Move constructor
+	Object(Object&& other) noexcept :
+		geometry(std::move(other.geometry)), material(std::move(other.material)) {}
 
 	// Compute the color produced by the Blinn-Phong illumination model for this object.
 	Color phong(const Light& light, const Vec3& L, const Vec3& V, const Vec3& N) const;

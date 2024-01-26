@@ -15,32 +15,28 @@ struct Color {
 	// Create a pixel with the given rgba values. 
 	Color(double r, double g, double b, double a) : r(r), g(g), b(b), a(a) {};
 
-	// These operations allow you to compose colors together and also manipulate the intensity.
-	Color operator *(double scalar) const { return Color(r * scalar, g * scalar, b * scalar); }
-	Color operator *(const Color& other) const { return Color{ r * other.r, g * other.g, b * other.b }; }
+	// Multiply a color by a scalar. 
+	Color operator *(const double scalar) const;
 
-	Color operator +(const Color& other) const { 
-		return Color{
-			std::min(1.0, r + other.r), 
-			std::min(1.0, g + other.g), 
-			std::min(1.0, b + other.b) 
-		}; 
-	}
-	
-	Color operator -(const Color& other) const { 
-		return Color{ 
-			std::max(0.0, r - other.r), 
-			std::max(0.0, g - other.g), 
-			std::max(0.0, b - other.b)
-		}; 
-	}
+	// Multiply a color by another color. The product of two colors is the product of the individual channels. 
+	Color operator *(const Color& c) const;
 
-	void operator +=(const Color& other) { r += other.r;  g += other.g; b += other.b; }
+	// Add two colors together. The sum of two colors is the sum of the individual channels.
+	Color operator +(const Color& c) const;
+
+	// Subtract two colors. The different between two colors is the difference between their individual channels.
+	Color operator -(const Color& c) const;
+
+	// Increment this color by another one. Adds the other color's rgb values to this color. 
+	void operator +=(const Color& c);
+
+	// Clamp the rgb channels so that their values are between 0 and 1. 
+	void clamp();
 
 	// Send a string representation of the pixel to an output stream. 
 	friend std::ostream& operator <<(std::ostream& os, const Color& p);
 
-	// Return a string version of the Color. 
+	// Return a string representation of the color.
 	std::string toString() const;
 };
 

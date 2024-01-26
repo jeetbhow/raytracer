@@ -67,5 +67,6 @@ Color Object::phong(const Light& light, const Vec3& L, const Vec3& V, const Vec3
 	double specularI = std::pow(std::max(0.0, halfway.dot(N)), material.shininess);
 	Color specular = light.color * material.specular * specularI;
 
-	return (ambient + diffuse + specular);
+	Color final = ambient + diffuse + specular; 
+	return final;
 }
