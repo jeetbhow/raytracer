@@ -1,175 +1,151 @@
 #include "scene.h"
+
 #include <algorithm>
 #include <format>
 
-const Color Viewport::BACKGROUND_COLOR = Color{ 0.5, 0.5, 0.5 };
+#include "utils.h"
 
-Vec3 Viewport::dx() const {
-	return Vec3{ width / img->getWidth(), 0, 0 };
-}
+const Color Viewport::BACKGROUND_COLOR = Color{0.5, 0.5, 0.5};
 
-Vec3 Viewport::dy() const {
-	return Vec3{ 0, height / img->getHeight(), 0 };
-}
+Vec3 Viewport::dx() const { return Vec3{width / img->getWidth(), 0, 0}; }
+
+Vec3 Viewport::dy() const { return Vec3{0, height / img->getHeight(), 0}; }
 
 Pnt3 Viewport::bottomLeft(Pnt3 camPosition, double focalLength) const {
-	return Pnt3(camPosition + Vec3{ -width / 2, -height / 2, -focalLength } + dx() / 2 + dy() / 2);
-}
-
-Image& Camera::render(std::vector<Object>& objs, std::vector<Light>& lights) {
-	Pnt3 bottomLeft = viewport.bottomLeft(getPosition(), focalLength);
-
-	// We want to compute the inverse matrix for each obj in the scene.
-	std::vector<Mat4> inverses;
-	for (const auto& obj : objs) {
-		inverses.push_back(obj.geometry->inverse());
-;	}
-
-	std::shared_ptr<Image> img = viewport.getImg();
-
-	// Shoot a ray through each viewport pixel.
-	for (size_t i = 0; i < img->getHeight(); ++i) {
-		for (size_t j = 0; j < img->getWidth(); ++j) {
-			Pnt3 targetPixel = bottomLeft + viewport.dx() * (double)j + viewport.dy() * (double)i;
-			Vec3 direction = (targetPixel - getPosition()).normalize();
-
-			// We iterate through each object and find the closest one that the ray intersects. 
-			double minT = std::numeric_limits<double>::max();
-			size_t minK = -1;
-
-			for (size_t k = 0; k < objs.size(); ++k) {
-				Mat4 inverse = inverses[k];
-
-				// Transform the ray into the sphere's coordinate frame.
-				Pnt3 originObjSpace = inverse * getPosition();
-				Vec3 dirObjSpace = (inverse * direction);
-				Ray ray{ originObjSpace, dirObjSpace };
-
-				std::vector<double> hits = objs[k].geometry->hit(ray);
-
-				if (hits.size() > 0 && hits[0] < minT) {
-					minT = hits[0];
-					minK = k;
-				}
-			}
-
-			// If the minK hasn't changed, then we didn't get a hit, so continue. 
-			if (minK == -1) {
-				img->setPixel(img->getHeight() - 1 - i, j, Viewport::BACKGROUND_COLOR);
-				continue;
-			}
-
-			// Hit. Do shading computation.
-			Object& nearestObj = objs[minK];
-			Mat4 world = nearestObj.geometry->getTransform();
-			Mat4 inverse = inverses[minK];
-			
-			Vec3 viewVec = (inverse * direction);
-			Pnt3 surfacePnt = Ray(inverse * getPosition(), viewVec).at(minT);
-			Vec3 normal = nearestObj.geometry->normal(surfacePnt);
-
-			// Transform the surface normal of the object. 
-			Mat3 inverseTranspose = inverse.extractLinear();
-			inverseTranspose.transpose();
-			normal = (inverseTranspose * normal).normalize();
-
-			// Iterate through each light source, and compute the light vector. The light vector is
-			// a vector that starts at the surface and points at the light. 
-			Color finalColor = Color(0, 0, 0);
-			for (auto& light : lights) {
-				Pnt3 surfacePntWorld = world * surfacePnt;
-
-				// check if the light vector hits an object when you cast it. If it does,
-				// then there's an object between this one and the light so it casts a shadow.
-				bool inShadow = false;
-				Object* hitObject = nullptr;
-				for (size_t l = 0; l < objs.size(); ++l) {
-					if (l == minK) {
-						continue;
-					}
-					Object& obj = objs[l];
-					Mat4 objInverse = objs[l].geometry->inverse();
-					Pnt3 surfacePntObj = objInverse * surfacePntWorld;
-					Vec3 lightDirectionObj = ((objInverse * light.location) - surfacePntObj).normalize();
-					Ray shadowRay(surfacePntObj, lightDirectionObj);
-					std::vector<double> hits = obj.geometry->hit(shadowRay);
-					if (hits.size() > 0) {
-						inShadow = true;
-						break;
-					}
-				}
-				
-				Vec3 lightVec = (inverse * light.location - surfacePnt).normalize();
-				if (!inShadow) {
-					finalColor += objs[minK].phong(light, lightVec, -viewVec.normalize(), normal);
-				} else {
-					finalColor += Color(0.3, 0.3, 0.3) * objs[minK].phong(light, lightVec, -viewVec.normalize(), normal);
-				}
-			}
-			finalColor.clamp();
-			img->setPixel(img->getHeight() - 1 - i, j, finalColor);
-		}
-	}
-	return *img;
-
+  return Pnt3(camPosition + Vec3{-width / 2, -height / 2, -focalLength} +
+              dx() / 2 + dy() / 2);
 }
 
 Pnt3 Camera::getPosition() const {
-	return Pnt3(transform[0][3], transform[1][3], transform[2][3]);
+  return Pnt3(transform[0][3], transform[1][3], transform[2][3]);
 }
 
-void Scene::render(const std::string& path) {
-    cam.render(objs, lights).save(path);
+Viewport Camera::getViewport() const { return viewport; }
+
+double Camera::getFocalLength() const { return focalLength; }
+
+std::vector<Hit *> Scene::castRay(const Ray &r) const {
+  std::vector<Hit *> hits;
+  for (size_t i = 0; i < objs.size(); ++i) {
+    Hit *hit = objs[i].geometry->hit(r.transformed(inverses[i]));
+    hits.push_back(hit);
+  }
+  return hits;
 }
 
+Color Scene::shade(const Pnt3 &point, const Vec3 &view, const Object &obj,
+                   const Mat4 &inverse) const {
+  Vec3 normal =
+      Geometry::invertNormal(obj.geometry->normal(point), inverse).normalize();
+  Pnt3 pntWorld = obj.geometry->getTransform() * point;
 
+  Color finalColor = Color(1, 1, 1) * obj.material.ambient;
+  for (const auto &light : lights) {
+    auto squareLight = dynamic_cast<SquareLight *>(light.get());
+    if (squareLight) {
+      std::vector<Pnt3> points = squareLight->getRandomPoints(20);
+
+      Color lightColor = Color(0, 0, 0);
+      unsigned blockedRays = 0;
+      for (const auto &lightPoint : points) {
+        Vec3 pointLightDirection = (lightPoint - pntWorld);
+        Ray shadowRay{pntWorld + pointLightDirection / 100,
+                      pointLightDirection};
+        std::vector<Hit *> hits = castRay(shadowRay);
+        auto [hit, index] = getClosestHit(hits);
+        if (index != -1) {
+          ++blockedRays;
+        } else {
+          double lightDistance = pointLightDirection.length();
+          Vec3 lightVec = (inverse * pointLightDirection).normalize();
+          lightColor +=
+              obj.phong(*light, lightDistance,
+                        pointLightDirection / lightDistance, view, normal);
+        }
+      }
+      double shadowIntensity = static_cast<double>(blockedRays) / points.size();
+      finalColor += lightColor / points.size() * (1 - shadowIntensity);
+    }
+  }
+  finalColor.clamp();
+  return finalColor;
+}
+
+void Scene::render(const std::string &path) {
+  Viewport viewport = cam.getViewport();
+  Pnt3 bottomLeft =
+      viewport.bottomLeft(cam.getPosition(), cam.getFocalLength());
+  std::shared_ptr<Image> img = viewport.getImg();
+
+  // Shoot a ray through each viewport pixel.
+  for (size_t i = 0; i < img->getHeight(); ++i) {
+    for (size_t j = 0; j < img->getWidth(); ++j) {
+      Pnt3 targetPixel =
+          bottomLeft + viewport.dx() * (double)j + viewport.dy() * (double)i;
+      Vec3 direction = (targetPixel - cam.getPosition()).normalize();
+      Ray view{cam.getPosition(), direction};
+
+      std::vector<Hit *> hits = castRay(view);
+      auto [hit, minK] = getClosestHit(hits);
+
+      // There was no hit
+      if (minK == -1) {
+        img->setPixel(img->getHeight() - 1 - i, j, Viewport::BACKGROUND_COLOR);
+        continue;
+      }
+
+      Color color =
+          shade(hit->ray.at(hit->minusT), -hit->ray.direction.normalize(),
+                objs[minK], inverses[minK]);
+      img->setPixel(img->getHeight() - 1 - i, j, color);
+    }
+  }
+  img->save(path);
+}
 
 Image::Image(size_t width, size_t height) {
-	this->width = width;
-	this->height = height;
-	imgbuf = std::vector<unsigned char>(4 * width * height);
+  this->width = width;
+  this->height = height;
+  imgbuf = std::vector<unsigned char>(4 * width * height);
 }
 
 Color Image::getPixel(size_t row, size_t col) const {
-	const size_t baseIndex = row * width + col;
-	double r = imgbuf[baseIndex] / 255.0;
-	double g = imgbuf[baseIndex + 1] / 255.0;
-	double b = imgbuf[baseIndex + 2] / 255.0;
-	double a = imgbuf[baseIndex + 3] / 255.0;
-	return Color{ r, g, b, a };
+  const size_t baseIndex = row * width + col;
+  double r = imgbuf[baseIndex] / 255.0;
+  double g = imgbuf[baseIndex + 1] / 255.0;
+  double b = imgbuf[baseIndex + 2] / 255.0;
+  double a = imgbuf[baseIndex + 3] / 255.0;
+  return Color{r, g, b, a};
 }
 
-void Image::setPixel(size_t row, size_t col, const Color& color) {
-	const size_t baseIndex = 4 * (row * width + col);
-	imgbuf[baseIndex] = static_cast<unsigned char>(255.999 * color.r);
-	imgbuf[baseIndex + 1] = static_cast<unsigned char>(255.999 * color.g);
-	imgbuf[baseIndex + 2] = static_cast<unsigned char>(255.999 * color.b);
-	imgbuf[baseIndex + 3] = static_cast<unsigned char>(255.999 * color.a);
+void Image::setPixel(size_t row, size_t col, const Color &color) {
+  const size_t baseIndex = 4 * (row * width + col);
+  imgbuf[baseIndex] = static_cast<unsigned char>(255.999 * color.r);
+  imgbuf[baseIndex + 1] = static_cast<unsigned char>(255.999 * color.g);
+  imgbuf[baseIndex + 2] = static_cast<unsigned char>(255.999 * color.b);
+  imgbuf[baseIndex + 3] = static_cast<unsigned char>(255.999 * color.a);
 }
 
-size_t Image::getWidth() const {
-	return width;
-}
+size_t Image::getWidth() const { return width; }
 
-size_t Image::getHeight() const {
-	return height;
-}
+size_t Image::getHeight() const { return height; }
 
 double Image::aspectRatio() const {
-	return static_cast<double>(width) / static_cast<double>(height);
+  return static_cast<double>(width) / static_cast<double>(height);
 }
 
-bool Image::save(const std::string& path) {
-	unsigned error = lodepng::encode(path, imgbuf, static_cast<unsigned>(width), static_cast<unsigned>(height));
-	if (error) {
-		std::cout << "Error " << error << ": " << lodepng_error_text(error) << std::endl;
-		return false;
-	}
-	return true;
+bool Image::save(const std::string &path) {
+  unsigned error = lodepng::encode(path, imgbuf, static_cast<unsigned>(width),
+                                   static_cast<unsigned>(height));
+  if (error) {
+    std::cout << "Error " << error << ": " << lodepng_error_text(error)
+              << std::endl;
+    return false;
+  }
+  return true;
 }
 
-
-std::ostream& operator<<(std::ostream& os, const Color& p) {
-	os << std::format("<{}, {}, {}>", p.r, p.g, p.b);
-	return os;
+std::ostream &operator<<(std::ostream &os, const Color &p) {
+  os << std::format("<{}, {}, {}>", p.r, p.g, p.b);
+  return os;
 }
