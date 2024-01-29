@@ -2,29 +2,29 @@
 
 Mat4 Geometry::inverse() const { return transform.inverse(); }
 
-Geometry &Geometry::move(double x, double y, double z) {
+Geometry& Geometry::move(double x, double y, double z) {
   transform.setTranslate(x, y, z);
   return *this;
 }
 
-Geometry &Geometry::translate(double dx, double dy, double dz) {
+Geometry& Geometry::translate(double dx, double dy, double dz) {
   transform.translate(dx, dy, dz);
   return *this;
 }
 
-Geometry &Geometry::scale(double scalar) {
+Geometry& Geometry::scale(double scalar) {
   transform.scale(scalar);
   return *this;
 }
 
-Geometry &Geometry::scale(double kx, double ky, double kz) {
+Geometry& Geometry::scale(double kx, double ky, double kz) {
   transform.scale(kx, ky, kz);
   return *this;
 }
 
 void Geometry::setCoordSystem(Mat4 m) { transform = m * transform; }
 
-Vec3 Geometry::invertNormal(const Vec3 &normal, const Mat4 &inverse) {
+Vec3 Geometry::invertNormal(const Vec3& normal, const Mat4& inverse) {
   Mat3 inverseTranspose = inverse.extractLinear();
   inverseTranspose.transpose();
   return (inverseTranspose * normal);
@@ -36,7 +36,7 @@ Pnt3 Sphere::center() const {
   return Pnt3(transform[0][3], transform[1][3], transform[2][3]);
 }
 
-Hit *Sphere::hit(const Ray &ray) const {
+Hit* Sphere::hit(const Ray& ray) const {
   Vec3 oc = ray.origin - Pnt3(0, 0, 0);
   double a = ray.direction.dot(ray.direction);
   double b = ray.direction.dot(oc);
@@ -52,10 +52,10 @@ Hit *Sphere::hit(const Ray &ray) const {
   }
 }
 
-Vec3 Sphere::normal(const Pnt3 &point) const { return (point - Pnt3(0, 0, 0)); }
+Vec3 Sphere::normal(const Pnt3& point) const { return (point - Pnt3(0, 0, 0)); }
 
-Color Object::phong(const Light &light, const double lightDistance,
-                    const Vec3 &L, const Vec3 &V, const Vec3 &N) const {
+Color Object::phong(const Light& light, const double lightDistance,
+                    const Vec3& L, const Vec3& V, const Vec3& N) const {
   double attenuation = light.intensity / (lightDistance * lightDistance);
   Color diffuse =
       light.color * material.color * material.diffuse * std::max(0.0, L.dot(N));

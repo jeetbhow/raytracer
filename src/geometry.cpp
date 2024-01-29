@@ -27,7 +27,9 @@ Vec3 Vec3::operator-(const Vec3& other) const {
   return Vec3(x - other.x, y - other.y, z - other.z);
 }
 
-Vec3 Vec3::operator-() const { return Vec3(-x, -y, -z); }
+Vec3 Vec3::operator-() const {
+  return Vec3(-x, -y, -z);
+}
 
 Vec3 Vec3::operator*(const double& scalar) const {
   return Vec3(scalar * x, scalar * y, scalar * z);
@@ -64,9 +66,13 @@ double Vec3::dot(const Vec3& other) const {
   return x * other.x + y * other.y + z * other.z;
 }
 
-double Vec3::length() const { return sqrt(x * x + y * y + z * z); }
+double Vec3::length() const {
+  return sqrt(x * x + y * y + z * z);
+}
 
-Vec3 Vec3::normalize() const { return *this / length(); }
+Vec3 Vec3::normalize() const {
+  return *this / length();
+}
 
 Mat3 Mat3::identity() {
   Mat3 m{};
@@ -76,9 +82,13 @@ Mat3 Mat3::identity() {
   return m;
 }
 
-double* Mat3::operator[](size_t row) { return data[row]; }
+double* Mat3::operator[](size_t row) {
+  return data[row];
+}
 
-const double* Mat3::operator[](size_t row) const { return data[row]; }
+const double* Mat3::operator[](size_t row) const {
+  return data[row];
+}
 
 Vec3 Mat3::operator*(const Vec3& v) const {
   double x = data[0][0] * v.x + data[0][1] * v.y + data[0][2] * v.z;
@@ -115,7 +125,9 @@ Mat3 Mat3::extractScaling() const {
   return m;
 }
 
-size_t Mat3::size() { return SIZE; }
+size_t Mat3::size() {
+  return SIZE;
+}
 
 void Mat3::transpose() {
   for (size_t i = 0; i < SIZE; ++i) {
@@ -227,9 +239,13 @@ Mat4 Mat4::operator*(const Mat4& other) const {
   return result;
 }
 
-double* Mat4::operator[](size_t row) { return data[row]; }
+double* Mat4::operator[](size_t row) {
+  return data[row];
+}
 
-const double* Mat4::operator[](size_t row) const { return data[row]; }
+const double* Mat4::operator[](size_t row) const {
+  return data[row];
+}
 
 void Mat4::fill(Mat3 m) {
   for (size_t i = 0; i < m.size(); ++i) {
@@ -309,7 +325,9 @@ std::ostream& operator<<(std::ostream& os, const Mat4& m) {
   return os;
 }
 
-Pnt3 Ray::at(double t) const { return origin + direction * t; }
+Pnt3 Ray::at(double t) const {
+  return origin + direction * t;
+}
 
 Ray Ray::transformed(const Mat4& m) const {
   Pnt3 newOrigin = m * origin;
