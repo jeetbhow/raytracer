@@ -93,8 +93,6 @@ struct Material {
     double specular;
     double shininess;
     double reflectivity;
-    double refractivity;
-    double refractiveIndex;
 
     Material(
         Color color,
