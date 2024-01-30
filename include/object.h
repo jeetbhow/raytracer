@@ -92,13 +92,25 @@ struct Material {
     double diffuse;
     double specular;
     double shininess;
+    double reflectivity;
+    double refractivity;
+    double refractiveIndex;
 
-    Material(Color color, double ambient, double diffuse, double specular, double shininess)
+    Material(
+        Color color,
+        double ambient,
+        double diffuse,
+        double specular,
+        double shininess,
+        double reflectivity)
         : color(color)
         , ambient(ambient)
         , diffuse(diffuse)
         , specular(specular)
         , shininess(shininess)
+        , reflectivity(reflectivity)
+        , refractivity(refractivity)
+        , refractiveIndex(refractiveIndex)
     {
     }
 };

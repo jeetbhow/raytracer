@@ -64,6 +64,9 @@ struct Vec3 {
 
     // Compute the cross product of two vectors.
     static Vec3 cross(const Vec3& first, const Vec3& second);
+
+    // Reflect the ray across a normal vector. Both of these vectors should be unit vectors.
+    static Vec3 reflect(const Vec3& incident, const Vec3& normal);
 };
 
 // Represents a location in 3D space.

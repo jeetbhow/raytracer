@@ -46,6 +46,9 @@ struct Color {
     // this color.
     void operator+=(const Color& c);
 
+    // Blend this color with another one.
+    void operator*=(const Color& c);
+
     // Divide the rgb channels of this color by a scalar.
     void operator/=(const double scalar);
 

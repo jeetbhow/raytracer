@@ -37,38 +37,54 @@ std::vector<Hit*> Scene::castRay(const Ray& r) const
 }
 
 Color Scene::shade(const Pnt3& point, const Vec3& view, const Object& obj,
-    const Mat4& inverse) const
+    const Mat4& inverse, unsigned depth) const
 {
     Vec3 normal = Geometry::invertNormal(obj.geometry->normal(point), inverse).normalize();
     Pnt3 pntWorld = obj.geometry->getTransform() * point;
 
     Color finalColor = Color(1, 1, 1) * obj.material.ambient;
+
     for (const auto& light : lights) {
         auto squareLight = dynamic_cast<SquareLight*>(light.get());
         if (squareLight) {
-            std::vector<Pnt3> points = squareLight->getRandomPoints(15);
-
-            Color lightColor = Color(0, 0, 0);
+            std::vector<Pnt3> points = squareLight->getRandomPoints(10);
+            Color lightColor(0, 0, 0);
+            Color reflectionColor(0, 0, 0);
             unsigned blockedRays = 0;
             for (const auto& lightPoint : points) {
                 Vec3 pointLightDirection = (lightPoint - pntWorld);
-                Ray shadowRay { pntWorld + pointLightDirection / 100,
+                double lightDistance = pointLightDirection.length();
+                Ray shadowRay { pntWorld + pointLightDirection * 1e-5,
                     pointLightDirection };
                 std::vector<Hit*> hits = castRay(shadowRay);
                 auto [hit, index] = getClosestHit(hits);
                 if (index != -1) {
                     ++blockedRays;
                 } else {
-                    double lightDistance = pointLightDirection.length();
                     Vec3 lightVec = (inverse * pointLightDirection).normalize();
                     lightColor += obj.phong(*light, lightDistance,
                         pointLightDirection / lightDistance, view, normal);
                 }
             }
             double shadowIntensity = static_cast<double>(blockedRays) / points.size();
-            finalColor += lightColor / points.size() * (1 - shadowIntensity);
+            finalColor += (lightColor / points.size()) * (1 - shadowIntensity);
         }
     }
+
+    Color reflectionColor { 0, 0, 0 };
+    if (obj.material.reflectivity > 0) {
+        Vec3 reflectionDirection = obj.geometry->getTransform() * Vec3::reflect(-view, normal);
+        Ray reflection { pntWorld + reflectionDirection * 1e-5, reflectionDirection };
+        std::vector<Hit*> hits = castRay(reflection);
+        auto [hit, index] = getClosestHit(hits);
+        if (index != -1 and depth > 0) {
+            reflectionColor += shade(hit->ray.at(hit->minusT), -hit->ray.direction.normalize(),
+                objs[index], inverses[index], depth - 1);
+        } else {
+            reflectionColor += Viewport::BACKGROUND_COLOR;
+        }
+    }
+    finalColor += reflectionColor * obj.material.reflectivity;
     finalColor.clamp();
     return finalColor;
 }
@@ -114,7 +130,7 @@ void Scene::render(const std::string& path, unsigned samples)
                 }
 
                 Color color = shade(hit->ray.at(hit->minusT), -hit->ray.direction.normalize(),
-                    objs[minK], inverses[minK]);
+                    objs[minK], inverses[minK], 5);
                 avgColor += color;
             }
             avgColor /= samples;

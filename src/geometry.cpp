@@ -61,6 +61,11 @@ Vec3 Vec3::cross(const Vec3& first, const Vec3& second)
     return Vec3(x, y, z);
 }
 
+Vec3 Vec3::reflect(const Vec3& incident, const Vec3& normal)
+{
+    return incident - normal * 2 * Vec3::dot(incident, normal);
+}
+
 void Vec3::reciprocal()
 {
     this->x = 1 / this->x;

@@ -41,6 +41,13 @@ void Color::operator/=(const double scalar)
     b /= scalar;
 }
 
+void Color::operator*=(const Color& c)
+{
+    r *= c.r;
+    g *= c.g;
+    b *= c.b;
+}
+
 void Color::clamp()
 {
     r = std::clamp(r, 0.0, 1.0);

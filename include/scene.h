@@ -137,7 +137,8 @@ private:
     Color shade(const Pnt3& point,
         const Vec3& view,
         const Object& obj,
-        const Mat4& inverse) const;
+        const Mat4& inverse,
+        unsigned depth) const;
 
 public:
     // Create a scene with a list of objects, a list of lights, and a camera.
