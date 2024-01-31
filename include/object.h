@@ -107,8 +107,6 @@ struct Material {
         , specular(specular)
         , shininess(shininess)
         , reflectivity(reflectivity)
-        , refractivity(refractivity)
-        , refractiveIndex(refractiveIndex)
     {
     }
 };

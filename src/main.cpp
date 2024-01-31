@@ -5,7 +5,7 @@ using namespace std;
 int main()
 {
     // VIEWPORT
-    Viewport vp(2, 800, 16.0 / 9.0);
+    Viewport vp(2, 600, 16.0 / 9.0);
 
     // MATERIAL
     Material m1(Color(1, 0, 0), 0.05, 0.1, 0.8, 30, 1.0);
