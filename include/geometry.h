@@ -1,6 +1,6 @@
 #pragma once
-#include <format>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -9,39 +9,32 @@ struct Vec3 {
     // The components of the vector.
     double x, y, z;
 
-    Vec3()
-        : x(0)
-        , y(0)
-        , z(0) {};
-    Vec3(double x, double y, double z)
-        : x(x)
-        , y(y)
-        , z(z)
-    {
-    }
+    Vec3() : x(0), y(0), z(0){};
+    Vec3(double x, double y, double z) : x(x), y(y), z(z) {}
 
     // Vector addition and substraction.
-    Vec3 operator+(const Vec3& other) const;
-    Vec3 operator-(const Vec3& other) const;
+    Vec3 operator+(const Vec3 &other) const;
+    Vec3 operator-(const Vec3 &other) const;
+    void operator+=(const Vec3 &other);
 
     // Scalar multiplication
-    Vec3 operator*(const double& scalar) const;
-    Vec3 operator/(const double& scalar) const;
+    Vec3 operator*(const double scalar) const;
+    Vec3 operator/(const double scalar) const;
     Vec3 operator-() const;
+    void operator/=(const double scalar);
 
     // Send a formatted string version of the vector to an ostream. Vectors are
     // denoted by square brackets [].
-    friend std::ostream&
-    operator<<(std::ostream& os, const Vec3& v)
-    {
-        os << '[' << v.x << ", " << v.y << ", " << v.z << ']';
-        return os;
-    }
+    friend std::ostream &operator<<(std::ostream &os, const Vec3 &v);
 
-    std::string
-    toString() const
-    {
-        return std::format("[{}, {}, {}]", x, y, z);
+    // Return a string representation of the vector.
+    std::string toString() const {
+    	std::stringstream ss;
+        ss << "[" << x << ", " << y << ", "
+       	<< "z"
+       	<< "]"
+       	<< "\n";
+        return ss.str();
     }
 
     // Take the reciprocal of all of the elements in the vector.
@@ -51,7 +44,7 @@ struct Vec3 {
     void negate();
 
     // Return the dot product of this vector and another one.
-    double dot(const Vec3& other) const;
+    double dot(const Vec3 &other) const;
 
     // Return the length of the vector.
     double length() const;
@@ -59,14 +52,36 @@ struct Vec3 {
     // Return a unit vector in the direction of this vector.
     Vec3 normalize() const;
 
+    // Check if the vector is the zero vector.
+    bool isZero() const;
+
     // Compute the dot product of two vectors.
-    static double dot(const Vec3& first, const Vec3& second);
+    static double dot(const Vec3 &first, const Vec3 &second);
 
     // Compute the cross product of two vectors.
-    static Vec3 cross(const Vec3& first, const Vec3& second);
+    static Vec3 cross(const Vec3 &first, const Vec3 &second);
 
-    // Reflect the ray across a normal vector. Both of these vectors should be unit vectors.
-    static Vec3 reflect(const Vec3& incident, const Vec3& normal);
+    // Reflect the ray across a normal vector. Both of these vectors should be
+    // unit vectors.
+    static Vec3 reflect(const Vec3 &incident, const Vec3 &normal);
+
+    // Refract a vector across a normal vector. The parameters kin and kout
+    // describe the index of refraction of the inside and outside mediums
+    // respectively. All vectors should be normalized and in world space.
+    static Vec3 refract(Vec3 &incident, Vec3 &normal, const double ki,
+                                            const double kt);
+
+    // Generate a random vector with components in a given range.
+    static Vec3 random(double min, double max);
+
+    // Generate a random vector with components in the range 0 - 1.
+    static Vec3 random();
+
+    // Generate a random vector in the unit sphere.
+    static Vec3 randomUnitVector();
+
+    // Return the zero vector.
+    static Vec3 zero();
 };
 
 // Represents a location in 3D space.
@@ -75,49 +90,52 @@ struct Pnt3 {
     double x, y, z;
 
     // Translate this point using a vector. Creates a new point and returns it.
-    Pnt3 operator+(const Vec3& other) const;
+    Pnt3 operator+(const Vec3 &other) const;
 
     // Translate this point using a vector.
-    void operator+=(const Vec3& other);
+    void operator+=(const Vec3 &other);
 
     // Subtract two points and get a vector that represents the displacement
     // between them. Creates a new point and returns it.
-    Vec3 operator-(const Pnt3& other) const;
+    Vec3 operator-(const Pnt3 &other) const;
 
     // Display this point on an output stream.
-    friend std::ostream& operator<<(std::ostream& os, const Pnt3& p);
+    friend std::ostream &operator<<(std::ostream &os, const Pnt3 &p);
 
     // Convert this point to a string.
-    std::string
-    toString() const
-    {
-        return std::format("({}, {}, {})", x, y, z);
+    std::string toString() const {
+        std::stringstream ss;
+        ss << "(" << x << ", " << y << ", "
+       << "z"
+       << ")"
+       << "\n";
+        return ss.str();
     }
 };
 
 // A 3x3 matrix. Used for linear transformations.
 class Mat3 {
-private:
-    static const size_t SIZE = 3;
+ private:
+    static const int SIZE = 3;
 
     // Internal representation of the matrix.
     double data[SIZE][SIZE];
 
-public:
+ public:
     // Create a 3x3 identity matrix and return it.
     static Mat3 identity();
 
     // Overload the [] operator to get an element from the matrix using an index.
-    double* operator[](size_t row);
+    double *operator[](int row);
 
     // Constant version of the [] operator overload.
-    const double* operator[](size_t row) const;
+    const double *operator[](int row) const;
 
     // Matrix-vector multiplication.
-    Vec3 operator*(const Vec3& v) const;
+    Vec3 operator*(const Vec3 &v) const;
 
     // Matrix-matrix multiplication.
-    Mat3 operator*(const Mat3& m) const;
+    Mat3 operator*(const Mat3 &m) const;
 
     // Transpose the matrix. Transposing a matrix swaps the rows and columns.
     void transpose();
@@ -130,21 +148,21 @@ public:
     Mat3 extractScaling() const;
 
     // Return the size of this matrix.
-    size_t size();
+    int size();
 
     // Send a formatted string representation of the matrix to an output stream.
-    friend std::ostream& operator<<(std::ostream& os, const Mat3& m);
+    friend std::ostream &operator<<(std::ostream &os, const Mat3 &m);
 };
 
 // A 4x4 matrix. Used for affine transformations.
 class Mat4 {
-private:
-    static const size_t SIZE = 4;
+ private:
+    static const int SIZE = 4;
 
     // Internal representation of the matrix.
     double data[SIZE][SIZE];
 
-public:
+ public:
     // Default constructor creates a 4x4 zero matrix.
     Mat4();
 
@@ -152,11 +170,11 @@ public:
     Mat4(const std::vector<std::vector<double>> arr);
 
     // Copy constructor
-    Mat4(const Mat4& other);
+    Mat4(const Mat4 &other);
 
     // Construct an affine matrix from a 3x3 transformation matrix and a
     // translation vector.
-    Mat4(const Mat3& linear, Vec3 translation);
+    Mat4(const Mat3 &linear, Vec3 translation);
 
     // Computes the inverse of this matrix and return it.
     Mat4 inverse() const;
@@ -167,10 +185,10 @@ public:
     Mat3 extractLinear() const;
 
     // Matrix-point multiplication. Unlike vectors, points can be translated.
-    Pnt3 operator*(const Pnt3& other) const;
+    Pnt3 operator*(const Pnt3 &other) const;
 
     // Matrix-vector multiplcation.
-    Vec3 operator*(const Vec3& other) const;
+    Vec3 operator*(const Vec3 &other) const;
 
     // Increment the translational component of the matrix to the location given
     // by a point.
@@ -192,23 +210,23 @@ public:
     void scale(double kx, double ky, double kz);
 
     // Get the length of a particular column.
-    double getLength(size_t col) const;
+    double getLength(int col) const;
 
     // Matrix-Matrix multiplication.
-    Mat4 operator*(const Mat4& other) const;
+    Mat4 operator*(const Mat4 &other) const;
 
     // Overload's the [] operator so that you can index into data to get
     // individual elements.
-    double* operator[](size_t row);
+    double *operator[](int row);
 
     // Constant version of the [] overload. Read-only access.
-    const double* operator[](size_t row) const;
+    const double *operator[](int row) const;
 
     // Fill the top left 3x3 submatrix with the given matrix.
     void fill(Mat3 m);
 
     // Send a formatted string representation of the matrix to an output stream.
-    friend std::ostream& operator<<(std::ostream& os, const Mat4& m);
+    friend std::ostream &operator<<(std::ostream &os, const Mat4 &m);
 
     // Create a 4x4 identity matrix and return it.
     static Mat4 identity();
@@ -221,10 +239,10 @@ struct Ray {
     Vec3 direction;
 
     // Apply an affine transformation to the ray and return the new ray.
-    Ray transformed(const Mat4& m) const;
+    Ray transformed(const Mat4 &m) const;
 
     // Apply an affine transformation to the ray.
-    void transform(const Mat4& m);
+    void transform(const Mat4 &m);
 
     // Return the point at t.
     Pnt3 at(double t) const;

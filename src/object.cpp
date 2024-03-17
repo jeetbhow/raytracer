@@ -1,35 +1,32 @@
 #include "object.h"
 
+#include <cmath>
+
 Mat4 Geometry::inverse() const { return transform.inverse(); }
 
-Geometry& Geometry::move(double x, double y, double z)
-{
+Geometry &Geometry::move(double x, double y, double z) {
     transform.setTranslate(x, y, z);
     return *this;
 }
 
-Geometry& Geometry::translate(double dx, double dy, double dz)
-{
+Geometry &Geometry::translate(double dx, double dy, double dz) {
     transform.translate(dx, dy, dz);
     return *this;
 }
 
-Geometry& Geometry::scale(double scalar)
-{
+Geometry &Geometry::scale(double scalar) {
     transform.scale(scalar);
     return *this;
 }
 
-Geometry& Geometry::scale(double kx, double ky, double kz)
-{
+Geometry &Geometry::scale(double kx, double ky, double kz) {
     transform.scale(kx, ky, kz);
     return *this;
 }
 
 void Geometry::setCoordSystem(Mat4 m) { transform = m * transform; }
 
-Vec3 Geometry::invertNormal(const Vec3& normal, const Mat4& inverse)
-{
+Vec3 Geometry::invertNormal(const Vec3 &normal, const Mat4 &inverse) {
     Mat3 inverseTranspose = inverse.extractLinear();
     inverseTranspose.transpose();
     return (inverseTranspose * normal);
@@ -37,13 +34,11 @@ Vec3 Geometry::invertNormal(const Vec3& normal, const Mat4& inverse)
 
 double Sphere::radius() const { return transform[0][0]; }
 
-Pnt3 Sphere::center() const
-{
+Pnt3 Sphere::center() const {
     return Pnt3(transform[0][3], transform[1][3], transform[2][3]);
 }
 
-Hit* Sphere::hit(const Ray& ray) const
-{
+std::optional<std::pair<double, double>> Sphere::hit(const Ray &ray) const {
     Vec3 oc = ray.origin - Pnt3(0, 0, 0);
     double a = ray.direction.dot(ray.direction);
     double b = ray.direction.dot(oc);
@@ -51,24 +46,28 @@ Hit* Sphere::hit(const Ray& ray) const
     double discriminant = b * b - a * c;
 
     if (discriminant < 0) {
-        return nullptr;
+        return std::nullopt;
     } else {
         double minusT = (-b - std::sqrt(discriminant)) / a;
         double plusT = (-b + std::sqrt(discriminant)) / a;
-        return new Hit { ray, minusT, plusT, minusT > 0.0 && plusT > 0.0 };
+        return std::make_pair(minusT, plusT);
     }
 }
 
-Vec3 Sphere::normal(const Pnt3& point) const { return (point - Pnt3(0, 0, 0)); }
+Vec3 Sphere::normal(const Pnt3 &point) const { return (point - Pnt3(0, 0, 0)); }
 
-Color Object::phong(const Light& light, const double lightDistance,
-    const Vec3& L, const Vec3& V, const Vec3& N) const
-{
-    double attenuation = light.intensity / (lightDistance * lightDistance);
-    Color diffuse = light.color * material.color * material.diffuse * std::max(0.0, L.dot(N));
-    Vec3 halfway = (V + L).normalize();
-    double specularI = std::pow(std::max(0.0, halfway.dot(N)), material.shininess);
-    Color specular = light.color * material.specular * specularI;
-    Color final = (diffuse + specular) * attenuation;
-    return final;
+std::shared_ptr<Material> Material::from(const MaterialType type,
+                                         const Color &color) {
+    switch (type) {
+        case MaterialType::Matte:
+            return std::make_shared<Material>(color, 0.05, 1.0, 0.0, 30.0, 0.0, 0.0, 1.0);
+        case MaterialType::Plastic:
+            return std::make_shared<Material>(color, 0.05, 0.4, 0.8, 100.0, 0.0, 0.0, 1.0);
+        case MaterialType::PolishedMetal:
+            return std::make_shared<Material>(color, 0.05, 0.05, 0.8, 60.0, 0.80, 0.0, 1.0);
+        case MaterialType::Glass:
+            return std::make_shared<Material>(color, 0.05, 0.0, 0.5, 150.0, 0.40, 0.80, 1.56);
+        default:
+            return std::make_shared<Material>(color, 0.05, 0.9, 0.1, 30.0, 0.0, 0.0, 1.0);
+    }
 }
