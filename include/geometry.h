@@ -6,10 +6,12 @@
 
 // Represents a motion or displacement in 3D space.
 struct Vec3 {
-    // The components of the vector.
-    double x, y, z;
+    double x, y, z;     // vector components
 
-    Vec3() : x(0), y(0), z(0){};
+    // Default contructor creates the zero vector. 
+    Vec3() : x(0), y(0), z(0){};    
+
+    // 
     Vec3(double x, double y, double z) : x(x), y(y), z(z) {}
 
     // Vector addition and substraction.

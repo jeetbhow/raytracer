@@ -31,9 +31,7 @@ public:
     bool save(const std::string &path);
 };
 
-/*
-                Represents a virtual image of the scene formed by a camera.
-*/
+// Where the image is created.
 class Viewport {
 private:
     double width;

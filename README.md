@@ -1,3 +1,18 @@
+# Raytracer
+
+## Introduction
+
+This software contains a raytracer and supplementary graphics library built in C++. This was something I mainly built for fun when I was learning about computer graphics. You should *not* try and use this in production. However, you're free to modify it to your heart's content.
+
+## Installation
+The repository includes a `CMakeLists.txt` file that will configure CMake to generate the build files for the project. Open a terminal and create a new directory to store the build files. Change to that directory and then run the command ```cmake ..``` to create the build files. If you're on Windows, you'll also need to install MSBuild (or Visual Studio) to build the solution. If you're on Linux you can simply run the Makefile using `make`.
+
+
+## Usage
+![App Screenshot](/images/img.png)
+
+This is some sample code that will setup the scene shown in the above image and render it. 
+```cpp
 #include "scene.h"
 
 using namespace std;
@@ -38,8 +53,8 @@ int main() {
     objs.push_back(move(sphere6));
 
     // LIGHTS
-    auto light = make_shared<SquareLight>(10, Pnt3(0, 2.0, -1.0), Color(1, 1, 1),
-                                                                                Vec3(0, -2, 2).normalize(), 1);
+    auto light = make_shared<SquareLight>(10, Pnt3(0, 2.0, -1.0), Color(1, 1, 1), 
+                                            Vec3(0, -2, 2).normalize(), 1);
 
     vector<std::shared_ptr<Light>> lights;
     lights.push_back(move(light));
@@ -51,3 +66,4 @@ int main() {
     Scene scene(objs, lights, cam);
     scene.render("img.png", 2);
 }
+```

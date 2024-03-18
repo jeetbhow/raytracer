@@ -1,5 +1,5 @@
 {
-    "C_Cpp.default.compilerPath": "/usr/bin/g++-11",
+    "C_Cpp.default.compilerPath": "cl.exe",
     "files.associations": {
         "Makefile": "c",
         "algorithm": "cpp",
