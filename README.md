@@ -28,36 +28,36 @@ inline shared_ptr<Object> createSphere(const Pnt3& center, double radius, const 
 
 Scene setupScene() {
     // Viewport
-    Viewport vp(2, 800, 16.0 / 9.0);
+    Viewport vp{2, 800, 16.0 / 9.0};
 
     // Materials
-    auto materials = vector<Material>{
+    auto materials = std::vector<Material>{
         createMaterial(MaterialType::Glass, Color::grey()),
         createMaterial(MaterialType::PolishedMetal, Color::grey()),
         createMaterial(MaterialType::Plastic, Color::white()),
-        createMaterial(MaterialType::Plastic, Color(0.9803, 0.501, 0.447)),
-        createMaterial(MaterialType::Plastic, Color(0.341, 0.463, 0.831)),
+        createMaterial(MaterialType::Plastic, Color{0.9803, 0.501, 0.447}),
+        createMaterial(MaterialType::Plastic, Color{0.341, 0.463, 0.831}),
     };
 
     // Spheres
-    vector<shared_ptr<Object>> objs = {
-        createSphere(Pnt3(1.0, -0.7, -1.0), 0.7, materials[0]),
-        createSphere(Pnt3(-1.0, -0.4, -2.5), 0.9, materials[1]),
-        createSphere(Pnt3(0, -500.5, -30), 500, materials[2]),
-        createSphere(Pnt3(-501.5, 0, 40), 500, materials[3]),
-        createSphere(Pnt3(501.5, 0, 40), 500, materials[4]),
-        createSphere(Pnt3(0, 0, -505.5), 500, materials[2]),
+    std::vector<std::shared_ptr<Object>> objs{
+        createSphere(Pnt3{1.0, -0.7, -1.0}, 0.7, materials[0]),
+        createSphere(Pnt3{-1.0, -0.4, -2.5}, 0.9, materials[1]),
+        createSphere(Pnt3{0, -500.5, -30}, 500, materials[2]),
+        createSphere(Pnt3{-501.5, 0, 40}, 500, materials[3]),
+        createSphere(Pnt3{501.5, 0, 40}, 500, materials[4]),
+        createSphere(Pnt3{0, 0, -505.5}, 500, materials[2]),
     };
 
     // Lights
-    vector<shared_ptr<Light>> lights;
-    lights.emplace_back(make_shared<SquareLight>(
-        10, Pnt3(0, 2.0, -1.0), Color(1, 1, 1), Vec3(0, -2, 2).normalize(), 1));
+    std::vector<std::shared_ptr<Light>> lights;
+    lights.emplace_back(std::make_shared<SquareLight>(
+        10, Pnt3{0, 2.0, -1.0}, Color{1, 1, 1}, Vec3{0, -2, 2}.normalize(), 1));
 
     // Camera
-    Camera cam(vp, Pnt3(0, 0, 3), 1);
+    Camera cam{vp, Pnt3{0, 0, 3}, 1};
 
-    return Scene(objs, lights, cam);
+    return Scene{objs, lights, cam};
 }
 
 int main() {
@@ -65,5 +65,6 @@ int main() {
     scene.render("img.png", 2);
     return 0;
 }
+
 
 ```
